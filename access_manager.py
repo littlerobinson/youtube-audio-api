@@ -1,98 +1,113 @@
+"""
+access_manager.py
+
+Token management system for YouTube Audio Converter API.
+Handles token-based authentication, expiration, and cleanup of downloaded audio files.
+
+Crafted with precision by Alperen Sümeroğlu — bringing clean code and clean audio together.
+"""
+
 import time
 import os
 from datetime import datetime, timedelta
+from pathlib import Path
 from constants import EXPIRY_TIME_MINUTES, DOWNLOADS_DIRECTORY
 
+# Stores active tokens with their expiration timestamps
 allowed_tokens = {}
+
+# Maps tokens to their respective audio file names
 audio_files = {}
 
-
-def add_token(token, file):
+def add_token(token: str, filename: str) -> None:
     """
-    Adds token with expiration date to allowed_tokens and token with file name to audio_files
-    :param token: generated access token
-    :param file: audio file name
-    :return:
-    """
-    expiry_date = datetime.now() + timedelta(minutes=EXPIRY_TIME_MINUTES)
-    allowed_tokens[token] = expiry_date
-    audio_files[token] = file
+    Registers a new token with an expiration time and links it to an audio file.
 
-
-def has_access(token):
+    Args:
+        token (str): The generated access token.
+        filename (str): The name of the associated audio file.
     """
-    Checks if token exists in allowed_tokens
-    :param token: access token
-    :return: True if is present in allowed_tokens, False otherwise
+    expiry = datetime.now() + timedelta(minutes=EXPIRY_TIME_MINUTES)
+    allowed_tokens[token] = expiry
+    audio_files[token] = filename
+
+def has_access(token: str) -> bool:
+    """
+    Checks if a given token exists in the allowed tokens.
+
+    Args:
+        token (str): The access token.
+
+    Returns:
+        bool: True if the token is known, False otherwise.
     """
     return token in allowed_tokens
 
-
-def is_valid(token):
+def is_valid(token: str) -> bool:
     """
-    Checks if token has not expired
-    :param token: access token
-    :return: True if token expired, False otherwise
+    Determines whether a token is still valid based on expiration.
+
+    Args:
+        token (str): The access token.
+
+    Returns:
+        bool: True if the token is still valid, False if expired.
     """
     return allowed_tokens[token] >= datetime.now()
 
-
-def file_assigned(token):
+def get_audio_file(token: str) -> str:
     """
-    Checks if file is associated with a token
-    :param token: access token
-    :return: True if file is assigned, False otherwise
-    """
-    return token in audio_files
+    Retrieves the audio file name associated with a token.
 
+    Args:
+        token (str): The access token.
 
-def get_audio_file(token):
-    """
-    Returns audio file name
-    :param token: access token
-    :return: audio file name
+    Returns:
+        str: The filename of the audio file.
     """
     return audio_files[token]
 
+def remove_expired_tokens() -> list:
+    """
+    Identifies expired access tokens, removes them from storage,
+    and collects filenames of associated audio files for deletion.
 
-def remove_expired_tokens():
+    Returns:
+        list: List of filenames to delete.
     """
-    Adds expired token to expired_tokens list, then removes them.
-    Pops file names to list, which are suppose to be deleted
-    :return: list of file names to be deleted
-    """
-    expired_tokens = []
-    files_to_delete = []
-    for token in allowed_tokens:
+    expired = []
+    files_to_remove = []
+
+    for token in list(allowed_tokens.keys()):
         if not is_valid(token):
-            expired_tokens.append(token)
-            files_to_delete.append(audio_files.pop(token))
+            expired.append(token)
+            files_to_remove.append(audio_files.pop(token, None))
 
-    for expired in expired_tokens:
-        del allowed_tokens[expired]
+    for token in expired:
+        allowed_tokens.pop(token, None)
 
-    return files_to_delete
+    return [f for f in files_to_remove if f]
 
-
-def delete_expired_files(files):
+def delete_expired_files(files: list) -> None:
     """
-    Removes files which were previously associated with expired tokens
-    :param files: file names to be deleted
-    :return:
+    Deletes expired audio files from the filesystem.
+
+    Args:
+        files (list): List of filenames to delete.
     """
     for file in files:
         try:
-            os.remove(DOWNLOADS_DIRECTORY + file)
-        except FileNotFoundError:
-            print('Error occurred while deleting a file')
+            full_path = Path(DOWNLOADS_DIRECTORY) / file
+            full_path.unlink(missing_ok=True)
+        except Exception as e:
+            print(f"Failed to delete file '{file}': {e}")
 
-
-def manage_tokens():
+def manage_tokens() -> None:
     """
-    Checks if there are any expired tokens. If so, removes them and deletes a associated files
-    :return:
+    Background task that runs indefinitely to remove expired tokens
+    and delete associated audio files every second.
     """
     while True:
-        files = remove_expired_tokens()
-        delete_expired_files(files)
+        expired_files = remove_expired_tokens()
+        delete_expired_files(expired_files)
         time.sleep(1)
