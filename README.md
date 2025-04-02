@@ -112,7 +112,7 @@ Result: `yourfile.mp3` will download automatically 🎶
 ## 👤 Author
 **Alperen Sümeroğlu**  
 Computer Engineer • Entrepreneur • Global Explorer 🌍  
-15+ European countries explored ✈️ | Future ethical hacker 🚀
+15+ European countries explored ✈️ 
 
 - 🔗 [LinkedIn](https://www.linkedin.com/in/alperensumeroglu/)
 - 🧠 [LeetCode](https://leetcode.com/u/alperensumeroglu/)
