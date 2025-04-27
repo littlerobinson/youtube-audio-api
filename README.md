@@ -1,46 +1,134 @@
-# 🎧 yt-audio-api
+# YouTube Audio Converter API
 
-Welcome to yt-audio-api, a lightweight Flask API that effortlessly converts YouTube videos to high-quality MP3 audio files. With secure, token-based download access, you can enjoy your favorite YouTube content in audio form with ease. Powered by yt-dlp & FFmpeg, this API ensures top-notch audio quality for your listening pleasure.
+A clean, modular Flask-based backend for downloading and serving YouTube audio tracks as MP3 files.
 
-### Features
-- **Audio Transcoding:** Convert YouTube videos to MP3 audio files seamlessly.
-- **Secure Downloads:** Access downloads securely through token-based authentication.
-- **Automatic Cleanup:** Keep your system tidy with automatic file expiration.
-- **Background Jobs:** Efficiently process audio conversions with background daemon threading.
-- **Privacy-First:** Your data and downloads are handled with utmost privacy and security.
-- **Microservice Architecture:** Built with a lightweight backend and follows a microservice architecture for optimal performance.
-- **RESTful API:** Access all functionalities through a clean and easy-to-use RESTful API.
-- **Time-Limited Access:** Enjoy temporary links for time-limited access to your converted audio files.
+Forked and adapted from the project by **Jaime00Marulanda**.
 
-### Repository Details
-- **Repository Name:** yt-audio-api
-- **Description:** A lightweight Flask API for converting YouTube videos to high-quality MP3 audio with secure, token-based download access.
-- **Topics:** audio-delivery-api, audio-transcoding, auto-cleanup, background-jobs, content-expiry, daemon-threading, ffmpeg-automation, ffmpeg-processing, file-expiration, lightweight-backend, microservice-architecture, privacy-first, restful-api, secure-downloads, server-side-audio-processing, temporary-links, time-limited-access, token-authentication, token-based-access, yt-dlp
-- **Latest Release:** [Download and Execute](https://github.com/Jaime00Marulanda/yt-audio-api/releases)
+![UI Screenshot](ui.png)
 
-### How to Use
-1. Clone the repository to your local machine.
-2. Install the required dependencies.
-3. Start the Flask server.
-4. Access the API endpoints to convert YouTube videos to MP3 audio files.
-5. Securely download your converted audio with token-based authentication.
+---
 
-### FAQ
+## Features
 
-**Q: What is yt-dlp?**
-A: yt-dlp is a tool used for downloading videos from YouTube and many other sites. It offers more features and flexibility compared to the standard YouTube-dl tool.
+- **Download YouTube audio** and convert it to high-quality MP3.
+- **Token-based access management** for downloading files securely.
+- **Automatic token expiration** and cleanup handled in the background.
+- **Web UI** for easier interaction (available at `/ui`).
 
-**Q: Can I customize the audio quality of the converted files?**
-A: Yes, you can specify the desired audio quality during the conversion process to tailor it to your preferences.
+---
 
-**Q: How secure are the token-based downloads?**
-A: Token-based authentication ensures that only authorized users can access and download the converted audio files, adding an extra layer of security to the process.
+## Technologies Used
 
-### Support and Contributions
-If you encounter any issues or have suggestions for improvements, feel free to open an issue or submit a pull request. Your contributions are highly appreciated.
+- [Flask](https://flask.palletsprojects.com/)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+- [FFmpeg](https://ffmpeg.org/)
+- Python 3.7+
 
-Visit the [Latest Release](https://github.com/Jaime00Marulanda/yt-audio-api/releases) for the most up-to-date version of yt-audio-api.
+---
 
-![Convert YouTube to MP3](https://via.placeholder.com/728x200)
+## Project Structure
 
-Enjoy converting your favorite YouTube videos to high-quality MP3 audio effortlessly with yt-audio-api. Streamline your audio experience today! 🎵🎶
+```
+.
+├── main.py              # Flask application entry point
+├── access_manager.py    # Manages tokens and file access
+├── constants.py         # Constants for error codes and settings
+├── templates/
+│   └── index.html  # Web UI template
+├── static/              # Static files (CSS, JS, images)
+└── downloads/         # Folder for downloaded MP3 files
+```
+
+---
+
+## API Endpoints
+
+### `GET /`
+
+Download and convert YouTube video audio to MP3.
+
+**Query Parameters:**
+
+- `url` (str): Full YouTube video URL.
+
+**Response:**
+
+```json
+{
+  "token": "<download_token>"
+}
+```
+
+### `GET /download`
+
+Download the MP3 file using a valid token.
+
+**Query Parameters:**
+
+- `token` (str): Unique access token received after conversion.
+
+**Response:**
+
+- MP3 file download or error JSON if token is invalid/expired.
+
+### `GET /ui`
+
+Access a simple HTML interface to input YouTube links and download audio.
+
+---
+
+## Setup & Run
+
+1. **Clone the repository**
+
+```bash
+git clone <your-repo-url>
+cd <your-project-directory>
+```
+
+2. **Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+3. **Install FFmpeg**
+
+- Linux (Debian/Ubuntu):
+  ```bash
+  sudo apt update && sudo apt install ffmpeg
+  ```
+- macOS (using brew):
+  ```bash
+  brew install ffmpeg
+  ```
+- Windows: [Download FFmpeg binaries](https://ffmpeg.org/download.html)
+
+4. **Run the server**
+
+```bash
+python main.py
+```
+
+The app will be available at `http://127.0.0.1:5000/`.
+
+---
+
+## Notes
+
+- Tokens are time-limited to ensure secure temporary access.
+- Filenames are sanitized to avoid filesystem issues.
+- Remember to create the `downloads/` folder or adjust the path in `constants.py`.
+
+---
+
+## License
+
+This project is adapted and licensed under the [MIT License](LICENSE).
+
+---
+
+## Credits
+
+- Original base by [Alperen Sümeroğlu](https://github.com/Jaime00Marulanda)
+- Adaptation and improvements by Luciole Labs.

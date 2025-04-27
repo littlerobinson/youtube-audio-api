@@ -1,6 +1,6 @@
 """
 main.py
-Developed by Alperen Sümeroğlu - YouTube Audio Converter API
+Forked from project by Alperen Sümeroğlu - YouTube Audio Converter API
 Clean, modular Flask-based backend for downloading and serving YouTube audio tracks.
 Utilizes yt-dlp and FFmpeg for conversion and token-based access management.
 """
