@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>YouTube Audio Converter</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>YouTube to MP3 Converter</h1>
+
+        <form id="url-form">
+            <input type="text" id="url-input" placeholder="Paste a YouTube URL here..." />
+            <button type="submit">Convert</button>
+        </form>
+
+        <div id="loader-single" class="loader hidden"></div>
+
+        <hr />
+
+        <form id="file-form">
+            <label for="file-upload">Upload a .txt file with YouTube links (one per line):</label>
+            <input type="file" id="file-upload" accept=".txt" />
+            <button type="submit">Convert All</button>
+        </form>
+
+        <div id="loader-multi" class="loader hidden"></div>
+
+        <div id="progress-container" class="hidden">
+            <p>Processing multiple links...</p>
+            <progress id="progress-bar" value="0" max="100"></progress>
+        </div>
+
+        <div id="response"></div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

@@ -7,16 +7,28 @@ Utilizes yt-dlp and FFmpeg for conversion and token-based access management.
 
 import secrets
 import threading
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from uuid import uuid4
 from pathlib import Path
 import yt_dlp
 import access_manager
+import re
 from constants import *
 
 # Initialize the Flask application
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path='/static',
+    static_folder='static',
+    template_folder='templates'
+)
 
+def sanitize_filename(title):
+    return re.sub(r'[\\/*?:"<>|]', "_", title)
+
+@app.route("/ui")
+def interface():
+    return render_template("index.html")
 
 @app.route("/", methods=["GET"])
 def handle_audio_request():
@@ -34,8 +46,10 @@ def handle_audio_request():
     if not video_url:
         return jsonify(error="Missing 'url' parameter in request."), BAD_REQUEST
 
-    filename = f"{uuid4()}.mp3"
-    output_path = Path(ABS_DOWNLOADS_PATH) / filename
+    # filename = f"{uuid4()}.mp3"
+    # output_path = Path(ABS_DOWNLOADS_PATH) / filename
+    output_path = Path(ABS_DOWNLOADS_PATH) / "%(title)s.%(ext)s"
+
 
     # yt-dlp configuration for downloading best audio and converting to mp3
     ydl_opts = {
@@ -52,9 +66,12 @@ def handle_audio_request():
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([video_url])
+            info = ydl.extract_info(video_url, download=True)
+            final_filename = f"{info['title']}.mp3"
     except Exception as e:
         return jsonify(error="Failed to download or convert audio.", detail=str(e)), INTERNAL_SERVER_ERROR
 
+    filename = sanitize_filename(final_filename)
     return _generate_token_response(filename)
 
 
