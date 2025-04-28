@@ -59,7 +59,7 @@ Download and convert YouTube video audio to MP3.
 }
 ```
 
-### `GET /download`
+### `GET /get_file`
 
 Download the MP3 file using a valid token.
 

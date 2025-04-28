@@ -17,10 +17,10 @@ urlForm.addEventListener("submit", async (e) => {
   showLoaderSingle();
 
   try {
-    const res = await fetch(`/?url=${encodeURIComponent(url)}`);
+    const res = await fetch(`/dl?url=${encodeURIComponent(url)}`);
     const data = await res.json();
     responseDiv.innerHTML = res.ok
-      ? `<p><a href="/download?token=${data.token}" target="_blank">Download MP3</a></p>`
+      ? `<p><a href="/get_file?token=${data.token}" target="_blank">Download MP3</a></p>`
       : `<p style="color:red;">Error: ${data.error}</p>`;
   } catch (err) {
     responseDiv.textContent = "Request failed.";
@@ -45,10 +45,10 @@ fileForm.addEventListener("submit", async (e) => {
   showProgress();
 
   for (let i = 0; i < urls.length; i++) {
-    const res = await fetch(`/?url=${encodeURIComponent(urls[i])}`);
+    const res = await fetch(`/dl?url=${encodeURIComponent(urls[i])}`);
     const data = await res.json();
     if (res.ok) {
-      responseDiv.innerHTML += `<p><a href="/download?token=${data.token}" target="_blank">${urls[i]} → Download</a></p>`;
+      responseDiv.innerHTML += `<p><a href="/get_file?token=${data.token}" target="_blank">${urls[i]} → Download</a></p>`;
     } else {
       responseDiv.innerHTML += `<p style="color:red;">${urls[i]} → Error: ${data.error}</p>`;
     }

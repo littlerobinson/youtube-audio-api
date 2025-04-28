@@ -26,11 +26,11 @@ app = Flask(
 def sanitize_filename(title):
     return re.sub(r'[\\/*?:"<>|]', "_", title)
 
-@app.route("/ui")
+@app.route("/")
 def interface():
     return render_template("index.html")
 
-@app.route("/", methods=["GET"])
+@app.route("/dl", methods=["GET"])
 def handle_audio_request():
     """
     Main endpoint to receive a YouTube video URL, download the audio in MP3 format,
@@ -75,7 +75,7 @@ def handle_audio_request():
     return _generate_token_response(filename)
 
 
-@app.route("/download", methods=["GET"])
+@app.route("/get_file", methods=["GET"])
 def download_audio():
     """
     Endpoint to serve an audio file associated with a given token.
